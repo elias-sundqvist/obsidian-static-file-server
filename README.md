@@ -1,57 +1,45 @@
-## Obsidian Sample Plugin
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/elias-sundqvist/obsidian-static-file-server?style=for-the-badge&sort=semver)](https://github.com/elias-sundqvist/obsidian-static-file-server/releases/latest)
+![GitHub All Releases](https://img.shields.io/github/downloads/elias-sundqvist/obsidian-static-file-server/total?style=for-the-badge)
+# Obsidian Static File Server
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+This is a plugin for Obsidian (https://obsidian.md).
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+It allows you to host obsidian subfolders as static file servers.
 
-**Note:** The Obsidian API is still in early alpha and is subject to change at any time!
+**Why?**
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Changes the default font color to red using `styles.css`.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+There are a number of reasons why one might want to do this
 
-### First time developing plugins?
+- Embed websites in your vault that work offline
+- Embed websites with CORS issues
+- Access your vault files from other applications
 
-Quick starting guide for new plugin devs:
+## Demonstration
+![](images/static%20file%20server%20demo.gif)
 
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## Getting Started 
 
-### Releasing new releases
+1. Install the plugin
+2. Make a folder in your vault
+3. Put some files in the folder
+4. Open `Static File Server Settings` and enter the name of the folder and a port number.
+5. You can now display the files in an iframe
+   * For example, a file called `example.html` could be accessed with  
+     `<iframe src="http://localhost:1337/example.html"/>` 
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments.
-- Publish the release.
+## Contributing
 
-### Adding your plugin to the community plugin list
+Feel free to contribute.
 
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+You can create an [issue](https://github.com/elias-sundqvist/obsidian-static-file-server/issues) to report a bug, suggest an improvement for this plugin, ask a question, etc.
 
-### How to use
+You can make a [pull request](https://github.com/elias-sundqvist/obsidian-static-file-server/pulls) to contribute to this plugin development.
 
-- Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
+## Changelog
 
-### Manually installing the plugin
+### 0.0.1 (2021-05-04) *First Release*
+* Basic functionality of the plugin implemented
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+## License
 
-### API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+[Obsidian Static File Server](https://github.com/elias-sundqvist/obsidian-static-file-server) is licensed under the GNU AGPLv3 license. Refer to [LICENSE](https://github.com/elias-sundqvist/obsidian-static-file-server/blob/master/LICENSE.TXT) for more information.
