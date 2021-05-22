@@ -1,6 +1,6 @@
 {
   "name": "obsidian-static-file-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Host obsidian subfolders as static file servers.",
   "main": "main.js",
   "scripts": {
