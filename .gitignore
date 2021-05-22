@@ -12,3 +12,6 @@ main.js
 
 # obsidian
 data.json
+
+# Local configuration
+.vault_plugin_dir

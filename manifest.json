@@ -1,9 +1,9 @@
 {
-	"id": "obsidian-sample-plugin",
-	"name": "Sample Plugin",
-	"version": "1.0.1",
+	"id": "obsidian-static-file-server",
+	"name": "Static File Server",
+	"version": "0.0.1",
 	"minAppVersion": "0.9.12",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
+	"description": "Host obsidian subfolders as static file servers.",
 	"author": "Obsidian",
 	"authorUrl": "https://obsidian.md/about",
 	"isDesktopOnly": false

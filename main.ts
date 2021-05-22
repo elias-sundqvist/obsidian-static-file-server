@@ -1,112 +1,113 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import staticServer, { StaticServer } from './static-server';
 
-interface MyPluginSettings {
-	mySetting: string;
+interface StaticFileServerPluginSettings {
+    vaultMaps: Record<string, string>;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+const DEFAULT_SETTINGS: StaticFileServerPluginSettings = {
+    vaultMaps: {}
+};
+
+export default class StaticFileServerPlugin extends Plugin {
+    settings: StaticFileServerPluginSettings;
+    webservers: StaticServer[];
+
+    async onload() {
+        this.webservers = [];
+        await this.loadSettings();
+        this.restartServers();
+        this.addSettingTab(new SettingTab(this.app, this));
+    }
+
+    shutDownServers() {
+        this.webservers.forEach(s => s.close());
+        this.webservers = [];
+    }
+
+    restartServers() {
+        this.shutDownServers();
+        for (const [port, path] of Object.entries(this.settings.vaultMaps)) {
+            const ws = staticServer(path, port, this);
+            ws.listen();
+            this.webservers.push(ws);
+        }
+    }
+
+    onunload() {
+        this.shutDownServers();
+    }
+
+    async loadSettings() {
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    }
+
+    async saveSettings() {
+        await this.saveData(this.settings);
+    }
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+class SettingTab extends PluginSettingTab {
+    plugin: StaticFileServerPlugin;
 
-	async onload() {
-		console.log('loading plugin');
+    constructor(app: App, plugin: StaticFileServerPlugin) {
+        super(app, plugin);
+        this.plugin = plugin;
+    }
 
-		await this.loadSettings();
+    display(): void {
+        const { containerEl } = this;
 
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
-			new Notice('This is a notice!');
-		});
+        containerEl.empty();
 
-		this.addStatusBarItem().setText('Status Bar Text');
+        containerEl.createEl('h2', { text: 'Static file server settings' });
 
-		this.addCommand({
-			id: 'open-sample-modal',
-			name: 'Open Sample Modal',
-			// callback: () => {
-			// 	console.log('Simple Callback');
-			// },
-			checkCallback: (checking: boolean) => {
-				let leaf = this.app.workspace.activeLeaf;
-				if (leaf) {
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-					return true;
-				}
-				return false;
-			}
-		});
+        let i = 1;
+        [...Object.entries(this.plugin.settings.vaultMaps), ['', '']].forEach(([port, path]) => {
+            new Setting(containerEl)
+                .setName(`port #${i}`)
+                .setDesc('The port number')
+                .addText(text =>
+                    text
+                        .setPlaceholder('e.g. 1337')
+                        .setValue(port)
+                        .onChange(async newPort => {
+                            if (Number(newPort)) {
+                                delete this.plugin.settings.vaultMaps[port];
+                                port = newPort;
+                                this.plugin.settings.vaultMaps[port] = path;
+                            }
+                        })
+                );
+            new Setting(containerEl)
+                .setName(`folder #${i}`)
+                .setDesc(`The vault folder served for port #${i}`)
+                .addText(text =>
+                    text
+                        .setPlaceholder('e.g. /somepath')
+                        .setValue(path)
+                        .onChange(async newPath => {
+                            this.plugin.settings.vaultMaps[port] = newPath;
+                            path = newPath;
+                        })
+                );
+            i++;
+        });
 
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+        new Setting(containerEl).addButton(button =>
+            button.setButtonText('Revert').onClick(async () => {
+                await this.plugin.loadSettings();
+                this.plugin.restartServers();
+                this.display();
+            })
+        );
 
-		this.registerCodeMirror((cm: CodeMirror.Editor) => {
-			console.log('codemirror', cm);
-		});
-
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
-
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
-	}
-
-	onunload() {
-		console.log('unloading plugin');
-	}
-
-	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-	}
-
-	async saveSettings() {
-		await this.saveData(this.settings);
-	}
-}
-
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
-
-	onOpen() {
-		let {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		let {contentEl} = this;
-		contentEl.empty();
-	}
-}
-
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
-		super(app, plugin);
-		this.plugin = plugin;
-	}
-
-	display(): void {
-		let {containerEl} = this;
-
-		containerEl.empty();
-
-		containerEl.createEl('h2', {text: 'Settings for my awesome plugin.'});
-
-		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue('')
-				.onChange(async (value) => {
-					console.log('Secret: ' + value);
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
-	}
+        new Setting(containerEl).addButton(button =>
+            button.setButtonText('Apply').onClick(async () => {
+                await this.plugin.saveSettings();
+                this.plugin.restartServers();
+                this.display();
+            })
+        );
+    }
 }
