@@ -84,7 +84,7 @@ class SettingTab extends PluginSettingTab {
                 .setDesc(`The vault folder served for port #${i}`)
                 .addText(text =>
                     text
-                        .setPlaceholder('e.g. /somepath')
+                        .setPlaceholder('e.g. FolderName')
                         .setValue(path)
                         .onChange(async newPath => {
                             this.plugin.settings.vaultMaps[port] = newPath;
