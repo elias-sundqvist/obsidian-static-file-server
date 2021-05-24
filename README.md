@@ -37,6 +37,10 @@ You can make a [pull request](https://github.com/elias-sundqvist/obsidian-static
 
 ## Changelog
 
+### 0.0.3 (2021-05-04) *Minor fixes*
+* Fix various issues mentioned by lishind in (this the community plugin list PR)[https://github.com/obsidianmd/obsidian-releases/pull/304#issuecomment-846665181]
+* Remove error logging (error messages can still be found in the network tab of developer tools.)
+
 ### 0.0.2 (2021-05-04) *Fixed misleading setting placeholder*
 * The folder path should not be prefixed with a `/`. Changed the placeholder from `e.g. /somepath` to `e.g. FolderName`
 

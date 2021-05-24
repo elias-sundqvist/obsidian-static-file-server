@@ -2,7 +2,7 @@ import http from 'http';
 import { ALLOWED_HEADERS, mimeType } from './constants';
 import url from 'url';
 import StaticFileServerPlugin from 'main';
-import { TFile } from 'obsidian';
+import { normalizePath, TFile } from 'obsidian';
 
 function toBuffer(ab: ArrayBuffer): Buffer {
     const buf = Buffer.alloc(ab.byteLength);
@@ -14,7 +14,7 @@ function toBuffer(ab: ArrayBuffer): Buffer {
 }
 
 const exp = (folder: string, port: string, plugin: StaticFileServerPlugin) => {
-    const fileBufferCache = new Map<string, { ctime: number; buf: Buffer }>();
+    const fileBufferCache = new Map<string, { mtime: number; buf: Buffer }>();
     const app = plugin.app;
     console.log('Creating server', folder, port);
     const server = http.createServer(async function (req, res) {
@@ -22,17 +22,21 @@ const exp = (folder: string, port: string, plugin: StaticFileServerPlugin) => {
         res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, POST, OPTIONS, PUT, PATCH, DELETE');
         res.setHeader('Access-Control-Allow-Headers', ALLOWED_HEADERS);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
-        console.log(`${req.method} ${req.url}`);
 
         try {
             // parse URL
             const parsedUrl = url.parse(req.url);
 
-            const fullPath = folder + parsedUrl.pathname;
-            const abstractPath = app.vault.getAbstractFileByPath(fullPath) as TFile;
+            const fullPath = normalizePath(folder + parsedUrl.pathname);
+            const abstractPath = app.vault.getAbstractFileByPath(fullPath);
+            if (abstractPath === null || !(abstractPath instanceof TFile)) {
+                res.statusCode = 404;
+                res.end(`File ${fullPath} is not a file!`);
+                return;
+            }
 
             let fileBuffer = null;
-            if (fileBufferCache.has(fullPath) && fileBufferCache.get(fullPath).ctime == abstractPath.stat.ctime) {
+            if (fileBufferCache.has(fullPath) && fileBufferCache.get(fullPath).mtime == abstractPath.stat.mtime) {
                 fileBuffer = fileBufferCache.get(fullPath).buf;
             } else {
                 const file = await app.vault.readBinary(abstractPath);
@@ -44,7 +48,7 @@ const exp = (folder: string, port: string, plugin: StaticFileServerPlugin) => {
                     return;
                 }
                 fileBuffer = toBuffer(file);
-                fileBufferCache.set(fullPath, { ctime: abstractPath.stat.ctime, buf: fileBuffer });
+                fileBufferCache.set(fullPath, { mtime: abstractPath.stat.mtime, buf: fileBuffer });
             }
 
             const ext = '.' + abstractPath.extension;
@@ -52,7 +56,6 @@ const exp = (folder: string, port: string, plugin: StaticFileServerPlugin) => {
             res.setHeader('Content-type', mimeType[ext as keyof typeof mimeType] || 'text/plain');
             res.end(fileBuffer);
         } catch (e) {
-            console.log('error', e);
             res.statusCode = 500;
             res.end(`Error getting the file: ${e}.`);
         }
