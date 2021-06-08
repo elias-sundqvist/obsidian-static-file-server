@@ -37,6 +37,9 @@ You can make a [pull request](https://github.com/elias-sundqvist/obsidian-static
 
 ## Changelog
 
+### 0.0.4 (2021-06-08) *Minor Bug fix*
+* Hopefully resolved issue #1. Ports are now always validated before the servers are started. 
+
 ### 0.0.3 (2021-05-04) *Minor fixes*
 * Fix various issues mentioned by lishind in (this the community plugin list PR)[https://github.com/obsidianmd/obsidian-releases/pull/304#issuecomment-846665181]
 * Remove error logging (error messages can still be found in the network tab of developer tools.)

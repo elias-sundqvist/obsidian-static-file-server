@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
 import staticServer, { StaticServer } from './static-server';
 
 interface StaticFileServerPluginSettings {
@@ -8,6 +8,8 @@ interface StaticFileServerPluginSettings {
 const DEFAULT_SETTINGS: StaticFileServerPluginSettings = {
     vaultMaps: {}
 };
+
+const isValidPort = (port: string) => Number(port) && 0 <= Number(port) && Number(port) <= 65535;
 
 export default class StaticFileServerPlugin extends Plugin {
     settings: StaticFileServerPluginSettings;
@@ -28,6 +30,10 @@ export default class StaticFileServerPlugin extends Plugin {
     restartServers() {
         this.shutDownServers();
         for (const [port, path] of Object.entries(this.settings.vaultMaps)) {
+            if (!isValidPort(port)) {
+                new Notice(`Static File Server Plugin: Invalid port '${port}'`);
+                continue;
+            }
             const ws = staticServer(path, port, this);
             ws.listen();
             this.webservers.push(ws);
@@ -72,7 +78,7 @@ class SettingTab extends PluginSettingTab {
                         .setPlaceholder('e.g. 1337')
                         .setValue(port)
                         .onChange(async newPort => {
-                            if (Number(newPort)) {
+                            if (isValidPort(newPort)) {
                                 delete this.plugin.settings.vaultMaps[port];
                                 port = newPort;
                                 this.plugin.settings.vaultMaps[port] = path;
