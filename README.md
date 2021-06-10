@@ -27,6 +27,10 @@ There are a number of reasons why one might want to do this
    * For example, a file called `example.html` could be accessed with  
      `<iframe src="http://localhost:1337/example.html"/>` 
 
+## FAQ
+
+* [How could I visit the website like you did in GIF?](https://github.com/elias-sundqvist/obsidian-static-file-server/issues/3#issuecomment-857964429)
+
 ## Contributing
 
 Feel free to contribute.
