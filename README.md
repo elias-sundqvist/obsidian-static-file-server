@@ -41,6 +41,9 @@ You can make a [pull request](https://github.com/elias-sundqvist/obsidian-static
 
 ## Changelog
 
+### 0.0.5 (2022-01-20) *Minor Bug fix*
+* Fix bug where Chinese path could not be accessed #5.
+
 ### 0.0.4 (2021-06-08) *Minor Bug fix*
 * Hopefully resolved issue #1. Ports are now always validated before the servers are started. 
 
