@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-static-file-server",
 	"name": "Static File Server",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"minAppVersion": "0.9.12",
 	"description": "Host obsidian subfolders as static file servers.",
 	"author": "Obsidian",

@@ -27,7 +27,7 @@ const exp = (folder: string, port: string, plugin: StaticFileServerPlugin) => {
             // parse URL
             const parsedUrl = url.parse(req.url);
 
-            const fullPath = normalizePath(folder + parsedUrl.pathname);
+            const fullPath = decodeURI(normalizePath(folder + parsedUrl.pathname));
             const abstractPath = app.vault.getAbstractFileByPath(fullPath);
             if (abstractPath === null || !(abstractPath instanceof TFile)) {
                 res.statusCode = 404;
